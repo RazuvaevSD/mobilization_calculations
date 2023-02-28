@@ -12,6 +12,6 @@ class Window(Tk):
         # как базовый контейнер для остальных элементов управления
         self.main_frame = Frame(
             master=self,
-            name='main_frame', bg='white'
+            name='main_frame', bg='steel blue', padx=1, pady=1
         )
         self.main_frame.pack(fill='both', expand=True)

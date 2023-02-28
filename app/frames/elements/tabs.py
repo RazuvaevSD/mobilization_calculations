@@ -24,6 +24,24 @@ class TabWithCloseButton(Notebook):
         self.bind('<ButtonPress-1>', self.on_close_press, True)
         self.bind('<ButtonRelease-1>', self.on_close_release)
 
+    def get(self, id):
+        """(добавленная) Получить фрейм таба по его ИД"""
+        id = str(id).lower()
+        if id not in self.children:
+            raise ValueError(f'Таб с идентификатором \'{id}\' не найден.')
+        return self.children[id]
+
+    def forget(self, id) -> None:
+        """(переопределенная) Удалить таб по ИД"""
+        tab = self.get(id)
+        super().forget(tab)
+        if tab in self.children:
+            del self.children[tab]
+
+    def tabs(self):
+        """(переопределенная) Получить словарь с табами."""
+        return self.children
+
     def on_close_press(self, event):
         """Called when the button is pressed over the close button"""
 
@@ -49,7 +67,8 @@ class TabWithCloseButton(Notebook):
         index = self.index('@%d,%d' % (event.x, event.y))
 
         if self._active == index:
-            self.forget(index)
+            tab_id = super().tabs()[index].split('.')[-1]
+            self.forget(tab_id)
             self.event_generate('<<NotebookTabClosed>>')
 
         self.state(['!pressed'])
@@ -105,6 +124,7 @@ class TabWithCloseButton(Notebook):
                 ]
             })
         ])
+        style.map("CustomNotebook", background=["#FFFFFF"])
 
 
 class TabControl(TabWithCloseButton):
@@ -112,10 +132,11 @@ class TabControl(TabWithCloseButton):
         super().__init__(with_close_button, *args, **kwargs)
         super().pack(fill='both', expand=1)
 
-    def add_tab(self, menu: Frame = None, background='white', **kw):
-        frame = Frame(master=self, bg=background)
-        frame.pack(fill='both', expand=True)
-        self.add(child=frame, **kw)
-        if menu is not None:
-            menu = menu
-        return frame
+    def add_tab(self, id, background='white', menu: Frame = None, **kw):
+        tab = self.Tab(master=self, name=str(id).lower(), bg=background)
+        tab.pack(fill='both', expand=True)
+        self.add(child=tab, **kw)
+        return tab
+
+    class Tab(Frame):
+        pass
