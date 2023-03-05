@@ -18,7 +18,7 @@ class Document(Base):
                   doc='Дата документа.')
     parent_id = Column(Integer, ForeignKey('documents.id'),
                        doc='ИД вышестоящего документа.')
-    organization_id = Column(Integer, ForeignKey('organization.id'),
+    organization_id = Column(Integer, ForeignKey('organizations.id'),
                              doc='ИД организации.')
     organization = relationship('Organization', back_populates='documents',
                                 doc='Ссылка на организацию.')
