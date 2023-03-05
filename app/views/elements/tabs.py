@@ -1,9 +1,14 @@
 from tkinter import Frame, PhotoImage
 from tkinter.ttk import Notebook, Style
 
+from .menu import MenuControl
+
 
 class TabWithCloseButton(Notebook):
     """Таб-контрол с кнопкой закрытия."""
+    # В данном классе переопределена только функция закрытия
+    # остальное в TabControl
+    #
     # Стянул на просторах интернета,
     # разбираться как делать свой не хватает времени
     # https://stackoverflow.com/questions/39458337/is-there-a-way-to-add-close-buttons-to-tabs-in-tkinter-ttk-notebook
@@ -114,9 +119,9 @@ class TabWithCloseButton(Notebook):
                                 'sticky': 'nswe',
                                 'children': [
                                     ('CustomNotebook.label',
-                                     {'side': 'left', 'sticky': ''}),
+                                     {'side': 'bottom', 'sticky': ''}),
                                     ('CustomNotebook.close',
-                                     {'side': 'left', 'sticky': ''}),
+                                     {'side': 'right', 'sticky': ''}),
                                 ]
                             })
                         ]
@@ -124,18 +129,51 @@ class TabWithCloseButton(Notebook):
                 ]
             })
         ])
-        style.map("CustomNotebook", background=["#FFFFFF"])
+        theme = style.theme_use()
+        style.theme_settings(
+            theme,
+            settings={
+                "CustomNotebook": {
+                    "configure": {
+                        "background": '#e0e0e0',
+                        "tabmargins": [5, 5, 0, 0],
+                        "borderwidth": 2,
+                    }
+                },
+                "CustomNotebook.Tab": {
+                    "configure": {
+                        "background": '#f2f2f2',
+                        "padding": [5, 2],
+                        "font": "black",
+                    },
+                    "map": {
+                        "background": [("selected", 'white')],
+                        "expand": [("selected", [1, 1, 1, 0])]
+                    }
+                }
+            })
 
 
 class TabControl(TabWithCloseButton):
+    """Таб-контрол с кнопкой закрытия."""
+    # Здесь переопределена основная функциональность работы с табами
+    # кроме функции закрытия которая переопределена в родительском классе
     def __init__(self, with_close_button=True, *args, **kwargs):
-        super().__init__(with_close_button, *args, **kwargs)
+        super().__init__(with_close_button,
+                         *args, **kwargs)
         super().pack(fill='both', expand=1)
 
     def add_tab(self, id, background='white', menu: Frame = None, **kw):
+        """Создание таба с контроллером меню"""
         tab = self.Tab(master=self, name=str(id).lower(), bg=background)
         tab.pack(fill='both', expand=True)
         self.add(child=tab, **kw)
+        # добавляем в таб контроллер меню
+        menu = MenuControl(master=tab,
+                           bg='steel blue',
+                           padx=2, pady=2)
+        # для быстрого доступа добавим табу атрибут-ссылку на контроллер меню
+        setattr(tab, 'menu', menu)
         return tab
 
     class Tab(Frame):
