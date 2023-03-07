@@ -42,7 +42,7 @@ def open_doc_list(tab_control):
                     tags=('parent' if i % 4 == 0 and i < 40 else 'child',))
         # Расскрасить
         tree.tag_configure('parent', background='#98cbcd')
-        tree.tag_configure('child', background='#ebebeb')
+        tree.tag_configure('child', background='white')
 
 
 def initial_main_menu(master):

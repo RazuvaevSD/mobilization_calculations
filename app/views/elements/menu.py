@@ -20,7 +20,7 @@ class MenuControl(Frame):
                      foreground=foreground,
                      activebackground=activebackground,
                      *args, **kwargs)
-        btn.pack(side='left')
+        btn.pack(side='left', padx=3)
         self.buttons[id] = btn
 
     def get(self, id):

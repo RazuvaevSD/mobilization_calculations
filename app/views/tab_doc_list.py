@@ -24,18 +24,27 @@ class TabDocList:
         )
         create_menu.menu = Menu(create_menu)
         create_menu["menu"] = create_menu.menu
-        create_menu.pack(side='left', fill=None)
+        create_menu.pack(side='left', fill=None, padx=3)
 
         create_menu.menu.add_command(
             label='Создать док1',
             background='white',
-            command=lambda: self.create_doc('doc_type1')
+            command=lambda: self.create_document()
         )
         create_menu.menu.add_command(
             label='Создать док2',
             background='white',
-            command=lambda: self.create_doc('doc_type2')
+            command=lambda: self.create_document()
         )
+        edit_menu = self.tab.menu.add_btn('edit_menu',  # noqa
+                                          border=0,
+                                          borderwidth=0,
+                                          background='LightSteelBlue3',
+                                          fg='black',
+                                          activeforeground='white',
+                                          activebackground='LightSteelBlue3',
+                                          text='Редактировать выбранные',
+                                          command=self.edit_document)
 
     def create_tree(self, columns, heads):
         """Создать дерево документов."""
@@ -49,8 +58,8 @@ class TabDocList:
         for key, params in heads.items():
             self.tree.heading(key, **params)
         self.tree.column('#0', minwidth=50, width=50, stretch='no')
-
         self.tree.pack(fill='both', expand=1)
+
         # Добавить вертикальный скрол
         vert_scroll = Scrollbar(self.tree, orient="vertical",
                                 command=self.tree.yview)
@@ -68,13 +77,21 @@ class TabDocList:
         return self.tree
 
     def create_document(self):
-        """Открыть новый документ."""
+        """Отрыть форму создания документа."""
         tab = TabDoc(self.tab_control)
-        tab.create_table()
+        tab.create_sheet(250, 6)
 
-    def edit_document():
+    def edit_document(self):
         """Отркыть документ для редактирования."""
-        ...
+        for item in self.tree.selection():
+            if item in self.tab_control.tabs():
+                # Если документ уже открыт, перейти в его таб
+                self.tab_control.select(self.tab_control.get(item))
+            else:
+                doc_date = self.tree.item(item)['values'][1]
+                tab = TabDoc(self.tab_control, id=item,
+                             text=f'{item} от {doc_date}')
+                tab.create_sheet(250, 6)
 
     def delete_document():
         """Удалить документ."""
