@@ -32,20 +32,22 @@ class TabWithCloseButton(Notebook):
     def get(self, id):
         """(добавленная) Получить фрейм таба по его ИД"""
         id = str(id).lower()
-        if id not in self.children:
-            raise ValueError(f'Таб с идентификатором \'{id}\' не найден.')
-        return self.children[id]
+        tab = None
+        for val in super().tabs():
+            if val.split('.')[-1] == id:
+                tab = self.children[id]
+                break
+        return tab
 
     def forget(self, id) -> None:
         """(переопределенная) Удалить таб по ИД"""
         tab = self.get(id)
-        super().forget(tab)
-        if tab in self.children:
-            del self.children[tab]
+        if tab is not None:
+            super().forget(tab)
 
     def tabs(self):
         """(переопределенная) Получить словарь с табами."""
-        return self.children
+        return {tab.split('.')[-1]: tab for tab in super().tabs()}
 
     def on_close_press(self, event):
         """Called when the button is pressed over the close button"""

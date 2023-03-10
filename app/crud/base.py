@@ -3,40 +3,37 @@ from sqlalchemy import select
 
 class CRUDBase():
 
-    def __init__(self, model):
+    def __init__(self, model, session):
         self.model = model
+        self.session = session
 
-    async def get(self,
-                  obj_id: int,
-                  session):
-        db_obj = session.execute(
+    def get(self, obj_id: int):
+        db_obj = self.session.execute(
             select(self.model).where(self.model.id == obj_id))
         return db_obj.scalars().first()
 
-    async def get_list(self, session):
-        db_objs = session.execute(select(self.model))
+    def get_list(self):
+        db_objs = self.session.execute(
+            select(self.model).order_by(self.model.id))
         return db_objs.scalars().all()
 
-    def create(self, obj_in, session):
+    def create(self, obj_in):
         obj_in_data = obj_in
         db_obj = self.model(**obj_in_data)
-        session.add(db_obj)
-        session.commit()
-        session.refresh(db_obj)
+        self.session.add(db_obj)
+        self.session.commit()
+        self.session.refresh(db_obj)
         return db_obj
 
-    @staticmethod
-    def update(db_obj, obj_in, session):
-        for field in db_obj:
-            if field in obj_in:
-                setattr(db_obj, field, obj_in[field])
-        session.add(db_obj)
-        session.commit()
-        session.refresh(db_obj)
+    def update(self, db_obj, obj_in):
+        for field in obj_in:
+            setattr(db_obj, field, obj_in[field])
+        self.session.add(db_obj)
+        self.session.commit()
+        self.session.refresh(db_obj)
         return db_obj
 
-    @staticmethod
-    async def remove(db_obj, session,):
-        session.delete(db_obj)
-        session.commit()
+    def remove(self, db_obj):
+        self.session.delete(db_obj)
+        self.session.commit()
         return db_obj

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from app.core.db import Base
@@ -8,22 +8,16 @@ class Document(Base):
     """Реквизиты документа."""
     __tablename__ = 'documents'
     id = Column(Integer, primary_key=True)
-    type_id = Column(Integer, ForeignKey('documents_types.id'),
-                     doc='ИД типа документа.')
-    number = Column(Integer,
-                    doc='Номер документа.')
-    name = Column(String(450),
-                  doc='Наименование документа.')
-    date = Column(DateTime,
-                  doc='Дата документа.')
-    parent_id = Column(Integer, ForeignKey('documents.id'),
+    doc_type = Column(String(50), doc='Тип документа.')
+    number = Column(String, doc='Экземпляр.')
+    date = Column(String, doc='Дата документа.')
+    org_name = Column(String(800),
+                      doc='Наименование организации (в дательном падеже).')
+    pos_head = Column(String(450), doc='Должность руководителя организации.')
+    pos_coordinator = Column(String(450),
+                             doc='Должность руководителя организации.')
+    parent_id = Column(Integer, ForeignKey('documents.id'), nullable=True,
                        doc='ИД вышестоящего документа.')
-    organization_id = Column(Integer, ForeignKey('organizations.id'),
-                             doc='ИД организации.')
-    organization = relationship('Organization', back_populates='documents',
-                                doc='Ссылка на организацию.')
-    type = relationship('DocumentType', back_populates="documents",
-                        doc='Ссылка на тип документа.')
     amount = relationship('Amount', back_populates='document',
                           doc='Ссылка на Расчет ОБАС на выполнение '
                               'мероприятий по мобилизации.')
