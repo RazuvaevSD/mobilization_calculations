@@ -186,6 +186,7 @@ class TabDocList:
         selection = self.tree.selection()
         for item in selection:
             if item not in self.tab_control.tabs():
+                # если документ не окрыт
                 id = self.tree.item(item)['values'][0]
                 doc_date = self.tree.item(item)['values'][1]
                 doc_type = 'amount_oiv'
