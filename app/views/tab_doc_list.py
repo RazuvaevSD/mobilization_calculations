@@ -1,7 +1,8 @@
-from tkinter import Menu, Menubutton, messagebox
+from tkinter import Menu, Menubutton, filedialog, messagebox
 from tkinter.ttk import Scrollbar, Treeview
 
 from app.services.db.document import Document
+from app.services.files.csv import CSVDocument
 from app.views.elements.protocol_win import Protocol
 from app.views.tab_doc import TabDoc
 
@@ -75,6 +76,42 @@ class TabDocList:
                                           activebackground='LightSteelBlue3',
                                           text='Удалить выбранные',
                                           command=self.delete_document)
+        load_menu = Menubutton(
+            master=self.tab.menu,
+            text='Загрузить из файла \u23D0\u25BC',
+            border=1,
+            borderwidth=2,
+            background='LightSteelBlue3',
+            activeforeground='white',
+            activebackground='LightSteelBlue3',
+        )
+        load_menu.menu = Menu(load_menu)
+        load_menu["menu"] = load_menu.menu
+        load_menu.pack(side='right', fill=None, padx=3)
+
+        load_menu.menu.add_command(
+            label='Загрузить из *.csv',
+            background='white',
+            command=self.load_csv_document
+        )
+        save_menu = Menubutton(
+            master=self.tab.menu,
+            text='Выгрузить в файл \u23D0\u25BC',
+            border=1,
+            borderwidth=2,
+            background='LightSteelBlue3',
+            activeforeground='white',
+            activebackground='LightSteelBlue3',
+        )
+        save_menu.menu = Menu(save_menu)
+        save_menu["menu"] = save_menu.menu
+        save_menu.pack(side='right', fill=None, padx=3)
+
+        save_menu.menu.add_command(
+            label='Выгрузить в *.csv',
+            background='white',
+            command=self.save_csv_document
+        )
 
     def create_tree(self):
         """Создать дерево документов."""
@@ -231,3 +268,22 @@ class TabDocList:
             self.tab_control.forget(item)
 
         self.reload_tree()
+
+    def load_csv_document(self):
+        """Загрузить из csv"""
+        list_filename = filedialog.askopenfilenames()
+        list_doc_id = CSVDocument.read(list_filename)
+        if list_doc_id is not None and len(list_doc_id) > 0:
+            self.reload_tree()
+
+    def save_csv_document(self):
+        """Выгрузить в csv"""
+        selection = self.tree.selection()
+        if len(selection) < 1:
+            protocol = Protocol('Предупреждение', '800x300',
+                                'Вы не выбрали ни одного документа '
+                                'для выгрузки в файл.')
+            protocol.grab_set()
+            return
+        folder = filedialog.askdirectory()
+        CSVDocument.write(selection, folder=folder)

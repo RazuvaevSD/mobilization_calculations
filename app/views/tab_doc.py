@@ -383,7 +383,7 @@ class TabDoc:
             # сформировать заголовок
             doc_header_data = {
                 'doc_type': self.doc_type,
-                'number': self.inst.get(),
+                'number': self.inst.get() or 1,
                 'date': self.date.get(),
                 'org_name': self.org_name.get() or '',
                 'pos_head': self.pos_head.get() or '',
