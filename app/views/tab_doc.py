@@ -147,6 +147,7 @@ class TabDoc:
         self.sheet = Sheet(self.tab,
                            total_rows=rows,
                            total_columns=columns,
+                           max_colwidth=1000,
                            header_height=170,
                            expand_sheet_if_paste_too_big=False)
         self.sheet.enable_bindings()

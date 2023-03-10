@@ -182,11 +182,10 @@ class TabDocList:
     def edit_document(self):
         """Отркыть документ для редактирования."""
         item = None
-
         selection = self.tree.selection()
         for item in selection:
             if item not in self.tab_control.tabs():
-                # если документ не окрыт
+                # если документ еще не окрыт
                 id = self.tree.item(item)['values'][0]
                 doc_date = self.tree.item(item)['values'][1]
                 doc_type = 'amount_oiv'
@@ -199,6 +198,11 @@ class TabDocList:
                              text=f'{item} от {doc_date}')
                 tab.create_sheet(250, 6)
                 tab.load_doc_db()
+                if len(self.tree.parent(item)) > 0:
+                    # Если документ использован в сводном,
+                    # блокируем табличную часть
+                    tab.sheet.disable_bindings('all')
+
         if item is not None:
             # Если документ был уже открыт ранее
             self.tab_control.select(self.tab_control.get(item))
