@@ -11,11 +11,20 @@ class Aplication:
         app.geometry(WindowConf.SIZE.value)
         self.initial_main_menu(app)
 
-        # 'Ctrl+c' и 'Ctrl-v' для русской раскладки в Windows
-        app.event_add('<<Paste>>', '<Control-igrave>')
-        app.event_add("<<Copy>>", "<Control-ntilde>")
+        app.bind("<Control-KeyPress>", self.keypress)
 
         app.mainloop()
+
+    @staticmethod
+    def keypress(event):
+        """Обработчик событий горячих клавиш копипасты,
+        (из-за русской раскладки в Windows)."""
+        if event.keycode == 86:
+            event.widget.event_generate("<<Paste>>")
+        elif event.keycode == 67:
+            event.widget.event_generate("<<Copy>>")
+        elif event.keycode == 88:
+            event.widget.event_generate("<<Cut>>")
 
     @classmethod
     def initial_main_menu(cls, app):
