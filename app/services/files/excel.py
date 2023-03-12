@@ -171,23 +171,27 @@ class Excel:
                 for cell in row:
                     cell.border = THIN_BORDER
 
-            # Приложение
-            if doc_header_data.annex != '0':
-                row_index += 2
-                sheet[f'A{row_index}'] = ANNEX_TEXT[int(doc_header_data.annex)]
-                sheet.merge_cells(f'A{row_index}:F{row_index}')
-                sheet[f'A{row_index}'].alignment = Alignment(horizontal='left',
-                                                             wrap_text=True)
-                subrow_count = int(len(sheet[f'A{row_index}'].value) //
-                                   ((sheet.column_dimensions['A'].width +
-                                     sheet.column_dimensions['B'].width +
-                                     sheet.column_dimensions['C'].width +
-                                     sheet.column_dimensions['D'].width +
-                                     sheet.column_dimensions['E'].width +
-                                     sheet.column_dimensions['F'].width) /
-                                    EXP_FACTOR - SPARE)) + 1
-                sheet.row_dimensions[row_index].height = cls._count_height(
-                    subrow_count)
+            if doc_header_data.doc_type == 'amount_oiv':
+                # Приложение
+                if doc_header_data.annex != '0':
+                    row_index += 2
+                    sheet[f'A{row_index}'] = ANNEX_TEXT[
+                        int(doc_header_data.annex)]
+                    sheet.merge_cells(f'A{row_index}:F{row_index}')
+                    sheet[f'A{row_index}'].alignment = Alignment(
+                        horizontal='left',
+                        wrap_text=True)
+                    subrow_count = int(
+                        len(sheet[f'A{row_index}'].value) //
+                        ((sheet.column_dimensions['A'].width +
+                          sheet.column_dimensions['B'].width +
+                          sheet.column_dimensions['C'].width +
+                          sheet.column_dimensions['D'].width +
+                          sheet.column_dimensions['E'].width +
+                          sheet.column_dimensions['F'].width) / EXP_FACTOR -
+                         SPARE)) + 1
+                    sheet.row_dimensions[row_index].height = cls._count_height(
+                        subrow_count)
             # Подпись руководителя ОИВ
             row_index += 2
             sheet[f'A{row_index}'] = doc_header_data.pos_head
@@ -207,27 +211,29 @@ class Excel:
                                EXP_FACTOR - SPARE)) + 1
             sheet.row_dimensions[row_index].height = cls._count_height(
                 subrow_count)
-            # Подпись согласующего
-            row_index += 2
-            sheet[f'A{row_index}'] = 'Согласовано:'
-            row_index += 1
-            sheet[f'A{row_index}'] = doc_header_data.pos_coordinator
-            sheet.merge_cells(f'A{row_index}:D{row_index}')
-            sheet[f'A{row_index}'].alignment = Alignment(horizontal='left',
-                                                         wrap_text=True)
-            sheet[f'E{row_index}'] = '_' * 20
-            sheet.merge_cells(f'E{row_index}:F{row_index}')
-            sheet[f'A{row_index}'].alignment = Alignment(horizontal='left',
-                                                         vertical='bottom',
-                                                         wrap_text=True)
-            subrow_count = int(len(sheet[f'A{row_index}'].value) //
-                               ((sheet.column_dimensions['A'].width +
-                                 sheet.column_dimensions['B'].width +
-                                 sheet.column_dimensions['C'].width +
-                                 sheet.column_dimensions['D'].width) /
-                               EXP_FACTOR - SPARE)) + 1
-            sheet.row_dimensions[row_index].height = cls._count_height(
-                subrow_count)
+
+            if doc_header_data.doc_type == 'amount_oiv':
+                # Подпись согласующего
+                row_index += 2
+                sheet[f'A{row_index}'] = 'Согласовано:'
+                row_index += 1
+                sheet[f'A{row_index}'] = doc_header_data.pos_coordinator
+                sheet.merge_cells(f'A{row_index}:D{row_index}')
+                sheet[f'A{row_index}'].alignment = Alignment(horizontal='left',
+                                                             wrap_text=True)
+                sheet[f'E{row_index}'] = '_' * 20
+                sheet.merge_cells(f'E{row_index}:F{row_index}')
+                sheet[f'A{row_index}'].alignment = Alignment(horizontal='left',
+                                                             vertical='bottom',
+                                                             wrap_text=True)
+                subrow_count = int(len(sheet[f'A{row_index}'].value) //
+                                   ((sheet.column_dimensions['A'].width +
+                                     sheet.column_dimensions['B'].width +
+                                     sheet.column_dimensions['C'].width +
+                                     sheet.column_dimensions['D'].width) /
+                                    EXP_FACTOR - SPARE)) + 1
+                sheet.row_dimensions[row_index].height = cls._count_height(
+                    subrow_count)
             # Установить шрифт для всех ячеек
             for row in sheet.iter_rows(min_row=1, max_row=row_index,
                                        max_col=6):

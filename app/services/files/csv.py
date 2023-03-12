@@ -41,7 +41,7 @@ class CSVDocument:
                         amount.amount_economy, amount.total,
                     ])
                 with open(filename, 'w', newline='', encoding='utf-8') as f:
-                    writer = csv.writer(f, delimiter='|',
+                    writer = csv.writer(f, delimiter='|', escapechar='\\',
                                         quoting=csv.QUOTE_NONE)
                     writer.writerows(fileheader)
                     writer.writerows(doc_header_data)
@@ -61,7 +61,7 @@ class CSVDocument:
             ids = []
             for filename in list_filename:
                 with open(filename, 'r', newline='', encoding='utf-8') as f:
-                    reader = csv.DictReader(f, delimiter='|')
+                    reader = csv.DictReader(f, delimiter='|', escapechar='\\')
 
                     doc_header_data = {
                         'doc_type': '',

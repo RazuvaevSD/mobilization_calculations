@@ -11,6 +11,10 @@ class Aplication:
         app.geometry(WindowConf.SIZE.value)
         self.initial_main_menu(app)
 
+        # 'Ctrl+c' и 'Ctrl-v' для русской раскладки в Windows
+        app.event_add('<<Paste>>', '<Control-igrave>')
+        app.event_add("<<Copy>>", "<Control-ntilde>")
+
         app.mainloop()
 
     @classmethod
