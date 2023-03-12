@@ -52,9 +52,9 @@ class Excel:
             # получить активный лист (автоматически создан)
             sheet = book.active
             # Заголовок
-            sheet['E1'] = 'Для служебного использования'
-            sheet.merge_cells('E1:F1')
-            sheet['E1'].alignment = Alignment(horizontal='right')
+            sheet['D1'] = 'Для служебного использования'
+            sheet.merge_cells('D1:F1')
+            sheet['D1'].alignment = Alignment(horizontal='right')
 
             sheet['E2'] = 'Экз. № ' + doc_header_data.number or '1'
             sheet.merge_cells('E2:F2')
@@ -186,11 +186,6 @@ class Excel:
                                      sheet.column_dimensions['E'].width +
                                      sheet.column_dimensions['F'].width) /
                                     EXP_FACTOR - SPARE)) + 1
-                print('len', len(sheet[f'A{row_index}'].value),
-                      'width', sheet.column_dimensions['A'].width,
-                      'factor', EXP_FACTOR,
-                      'spare', SPARE,
-                      subrow_count)
                 sheet.row_dimensions[row_index].height = cls._count_height(
                     subrow_count)
             # Подпись руководителя ОИВ
@@ -204,6 +199,14 @@ class Excel:
             sheet[f'A{row_index}'].alignment = Alignment(horizontal='left',
                                                          vertical='bottom',
                                                          wrap_text=True)
+            subrow_count = int(len(sheet[f'A{row_index}'].value) //
+                               ((sheet.column_dimensions['A'].width +
+                                 sheet.column_dimensions['B'].width +
+                                 sheet.column_dimensions['C'].width +
+                                 sheet.column_dimensions['D'].width) /
+                               EXP_FACTOR - SPARE)) + 1
+            sheet.row_dimensions[row_index].height = cls._count_height(
+                subrow_count)
             # Подпись согласующего
             row_index += 2
             sheet[f'A{row_index}'] = 'Согласовано:'
@@ -217,7 +220,14 @@ class Excel:
             sheet[f'A{row_index}'].alignment = Alignment(horizontal='left',
                                                          vertical='bottom',
                                                          wrap_text=True)
-
+            subrow_count = int(len(sheet[f'A{row_index}'].value) //
+                               ((sheet.column_dimensions['A'].width +
+                                 sheet.column_dimensions['B'].width +
+                                 sheet.column_dimensions['C'].width +
+                                 sheet.column_dimensions['D'].width) /
+                               EXP_FACTOR - SPARE)) + 1
+            sheet.row_dimensions[row_index].height = cls._count_height(
+                subrow_count)
             # Установить шрифт для всех ячеек
             for row in sheet.iter_rows(min_row=1, max_row=row_index,
                                        max_col=6):
