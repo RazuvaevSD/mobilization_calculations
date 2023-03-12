@@ -3,6 +3,7 @@ from tkinter.ttk import Scrollbar, Treeview
 
 from app.services.db.document import Document
 from app.services.files.csv import CSVDocument
+from app.services.files.excel import Excel
 from app.views.elements.protocol_win import Protocol
 from app.views.tab_doc import TabDoc
 
@@ -111,6 +112,11 @@ class TabDocList:
             label='Выгрузить в *.csv',
             background='white',
             command=self.save_csv_document
+        )
+        save_menu.menu.add_command(
+            label='Выгрузить в *.xlsx',
+            background='white',
+            command=self.save_xlsx_document
         )
 
     def create_tree(self):
@@ -287,3 +293,15 @@ class TabDocList:
             return
         folder = filedialog.askdirectory()
         CSVDocument.write(selection, folder=folder)
+
+    def save_xlsx_document(self):
+        """Выгрузить в xlsx"""
+        selection = self.tree.selection()
+        if len(selection) < 1:
+            protocol = Protocol('Предупреждение', '800x300',
+                                'Вы не выбрали ни одного документа '
+                                'для выгрузки в файл.')
+            protocol.grab_set()
+            return
+        folder = filedialog.askdirectory()
+        Excel.write(selection, folder=folder)

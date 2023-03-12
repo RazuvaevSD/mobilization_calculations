@@ -16,6 +16,8 @@ class Document(Base):
     pos_head = Column(String(450), doc='Должность руководителя организации.')
     pos_coordinator = Column(String(450),
                              doc='Должность руководителя организации.')
+    annex = Column(String(2),
+                   doc='Номера приложений.')
     parent_id = Column(Integer, ForeignKey('documents.id'), nullable=True,
                        doc='ИД вышестоящего документа.')
     amount = relationship('Amount', back_populates='document',

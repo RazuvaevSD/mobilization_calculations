@@ -26,18 +26,19 @@ class CSVDocument:
                     ['number', doc_header_data.number],
                     ['org_name', doc_header_data.org_name],
                     ['pos_head', doc_header_data.pos_head],
-                    ['pos_coordinator', doc_header_data.pos_coordinator]
+                    ['pos_coordinator', doc_header_data.pos_coordinator],
+                    ['annex', doc_header_data.annex],
                 ]
                 amount_data = [
                     [total_amount.data_type, total_amount.name,
                      total_amount.type_expenses, total_amount.amounts_transfer,
-                     total_amount.amount_economy, total_amount.total]
+                     total_amount.amount_economy, total_amount.total],
                 ]
                 for amount in amount_detail:
                     amount_data.append([
                         amount.data_type, amount.name,
                         amount.type_expenses, amount.amounts_transfer,
-                        amount.amount_economy, amount.total
+                        amount.amount_economy, amount.total,
                     ])
                 with open(filename, 'w', newline='', encoding='utf-8') as f:
                     writer = csv.writer(f, delimiter='|',
@@ -68,13 +69,16 @@ class CSVDocument:
                         'date': '',
                         'org_name': '',
                         'pos_head': '',
-                        'pos_coordinator': ''}
+                        'pos_coordinator': '',
+                        'annex': '',
+                    }
                     total_amount = {
                         'name': 'Итого в том числе:',
                         'type_expenses': '',
                         'amounts_transfer': '',
                         'amount_economy': '',
-                        'total': ''}
+                        'total': '',
+                    }
                     amount_detail = []
                     for row in reader:
                         if row['data_type'] in doc_header_data.keys():

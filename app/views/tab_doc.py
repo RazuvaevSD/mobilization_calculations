@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
-from tkinter import Entry, Frame, IntVar, Label, StringVar, messagebox
+from tkinter import (BooleanVar, Checkbutton, Entry, Frame, IntVar, Label,
+                     StringVar, messagebox)
 
 from tksheet import Sheet
 
@@ -42,6 +43,8 @@ class TabDoc:
         self.org_name = StringVar()
         self.pos_head = StringVar()
         self.pos_coordinator = StringVar()
+        self.annex_1 = BooleanVar()
+        self.annex_2 = BooleanVar()
         self.tab_control = tab_control
         self.id = id
         self.is_new = False
@@ -61,6 +64,8 @@ class TabDoc:
         """Загрузка значений по умолчанию для нового документа."""
         self.date.set(f'{datetime.now():{DT_FORMAT}}')
         self.inst.set(1)
+        self.annex_1.set(False)
+        self.annex_2.set(False)
         data = Settings().get()
         if data is not None:
             self.org_name.set(data.name)
@@ -112,7 +117,18 @@ class TabDoc:
         txt_instance = Entry(master=header, background='white',
                              textvariable=self.inst)
         txt_instance.grid(row=1, column=1, padx=3, pady=1, sticky='w')
+
         if doc_type == 'amount_oiv':
+            chk_annex_1 = Checkbutton(
+                master=header, background='white',
+                text='Приложение: объемы для плана перевода',
+                variable=self.annex_1)
+            chk_annex_1.grid(row=0, column=3, padx=3, pady=1, sticky='w')
+            chk_annex_2 = Checkbutton(
+                master=header, background='white',
+                text='Приложение: объемы для плана экономики',
+                variable=self.annex_2)
+            chk_annex_2.grid(row=1, column=3, padx=3, pady=1, sticky='w')
             lbl_name_oiv = Label(master=header, background='white',
                                  text='Наименование ОИВ (в дательном падеже)')
             lbl_name_oiv.grid(row=2, column=0, padx=3, pady=1, sticky='w',
@@ -286,7 +302,7 @@ class TabDoc:
                                geometry='1200x400',
                                message=msg)
             message.grab_set()
-            return
+            return False
 
         # Расчет колонки Всего
         for i in range(len(data)):
@@ -312,6 +328,7 @@ class TabDoc:
                                geometry='800x300',
                                message='Расчет итогов успешно завершен.')
             message.grab_set()
+        return True
 
     def load_doc_db(self):
         """Загрузить документ из базы."""
@@ -326,6 +343,14 @@ class TabDoc:
         self.org_name.set(doc_header_data.org_name)
         self.pos_head.set(doc_header_data.pos_head)
         self.pos_coordinator.set(doc_header_data.pos_coordinator)
+        if doc_header_data.annex is not None:
+            if doc_header_data.annex in ['1', '3']:
+                self.annex_1.set(True)
+            if doc_header_data.annex in ['2', '3']:
+                self.annex_2.set(True)
+            if doc_header_data.annex == '0':
+                self.annex_1.set(False)
+                self.annex_2.set(False)
         # сформировать табличную часть
         data = []
         # итоговая строка
@@ -379,7 +404,9 @@ class TabDoc:
     def save_document(self):
         """Сохранить документ."""
         try:
-            self.recalculation(protocol_mode=False)
+            valid = self.recalculation(protocol_mode=False)
+            if not valid:
+                return
             # сформировать заголовок
             doc_header_data = {
                 'doc_type': self.doc_type,
@@ -388,6 +415,14 @@ class TabDoc:
                 'org_name': self.org_name.get() or '',
                 'pos_head': self.pos_head.get() or '',
                 'pos_coordinator': self.pos_coordinator.get() or ''}
+            if self.annex_1.get() and self.annex_2.get():
+                doc_header_data['annex'] = '3'
+            elif self.annex_1.get():
+                doc_header_data['annex'] = '1'
+            elif self.annex_2.get():
+                doc_header_data['annex'] = '2'
+            else:
+                doc_header_data['annex'] = '0'
             # сформировать итоговую строку
             total = self.sheet.get_row_data(r=0)
             total_amount = {
